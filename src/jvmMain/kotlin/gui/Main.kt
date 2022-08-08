@@ -71,9 +71,9 @@ fun mainApp() = application {
                     MMenuBar("姬语言编辑器", windowState) {
                         MMenu("运行") {
                             val outBuilder = ByteArrayOutputStream()
-                            val errorBuilder = ByteArrayOutputStream()
-                            call(Env(IOConfig(PrintStream(outBuilder), PrintStream(errorBuilder), System.`in`)), codeFieldValue.text)
+                            call(Env(IOConfig(PrintStream(outBuilder), PrintStream(outBuilder), System.`in`)), codeFieldValue.text)
                             resultFieldValue = TextFieldValue(outBuilder.toString())
+                            outBuilder.close()
                         }
                     }
                 },
