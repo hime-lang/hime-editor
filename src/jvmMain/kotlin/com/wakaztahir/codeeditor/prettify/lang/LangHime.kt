@@ -205,14 +205,39 @@ class LangHime(s: String) : Lang() {
                                     }
                                 }
                                 if (start) {
-                                    fallthroughStylePatterns.new(
-                                        Prettify.PR_KEYWORD,
-                                        Regex(
-                                            "^${transformation(builder.toString())}\\b",
-                                            RegexOption.IGNORE_CASE
-                                        ),
-                                        null
-                                    )
+                                    val regex = builder.toString()
+                                    when (regex) {
+                                        "+" -> {
+                                            fallthroughStylePatterns.new(
+                                                Prettify.PR_KEYWORD,
+                                                Regex(
+                                                    "^\\+\\s",
+                                                    RegexOption.IGNORE_CASE
+                                                ),
+                                                null
+                                            )
+                                        }
+
+                                        "*" -> {
+                                            fallthroughStylePatterns.new(
+                                                Prettify.PR_KEYWORD,
+                                                Regex(
+                                                    "^\\*\\s",
+                                                    RegexOption.IGNORE_CASE
+                                                ),
+                                                null
+                                            )
+                                        }
+
+                                        else -> fallthroughStylePatterns.new(
+                                            Prettify.PR_KEYWORD,
+                                            Regex(
+                                                "^$regex\\s",
+                                                RegexOption.IGNORE_CASE
+                                            ),
+                                            null
+                                        )
+                                    }
                                     start = false
                                 }
                             }
