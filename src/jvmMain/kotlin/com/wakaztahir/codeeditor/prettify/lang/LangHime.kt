@@ -205,13 +205,12 @@ class LangHime(s: String) : Lang() {
                                     }
                                 }
                                 if (start) {
-                                    val regex = builder.toString()
-                                    when (regex) {
+                                    when (val regex = builder.toString()) {
                                         "+" -> {
                                             fallthroughStylePatterns.new(
                                                 Prettify.PR_KEYWORD,
                                                 Regex(
-                                                    "^\\+\\s",
+                                                    "^\\+",
                                                     RegexOption.IGNORE_CASE
                                                 ),
                                                 null
@@ -222,7 +221,7 @@ class LangHime(s: String) : Lang() {
                                             fallthroughStylePatterns.new(
                                                 Prettify.PR_KEYWORD,
                                                 Regex(
-                                                    "^\\*\\s",
+                                                    "^\\*",
                                                     RegexOption.IGNORE_CASE
                                                 ),
                                                 null
@@ -232,7 +231,7 @@ class LangHime(s: String) : Lang() {
                                         else -> fallthroughStylePatterns.new(
                                             Prettify.PR_KEYWORD,
                                             Regex(
-                                                "^$regex\\s",
+                                                "^$regex",
                                                 RegexOption.IGNORE_CASE
                                             ),
                                             null
