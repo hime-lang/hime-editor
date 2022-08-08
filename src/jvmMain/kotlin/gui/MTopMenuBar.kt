@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.window.*
@@ -89,13 +88,4 @@ object MTopMenuBar {
             }
         }
     }
-
-    @Composable
-    fun MMenuScope.MMenuItem(text: String, onClick: () -> Unit) =
-        DropdownMenuItem(
-            onClick = { onClick(); collapseMenu() },
-            modifier = Modifier.height(28.dp)
-        ) {
-            Text(text, maxLines = 1, fontSize = 1.2.em)
-        }
 }
