@@ -84,7 +84,6 @@ class LangHime(s: String) : Lang() {
                     val builder = StringBuilder()
                     while (code[index] != '(') {
                         if (index >= code.length - 1) {
-                            fallthroughStylePatterns = fallthroughStylePatternBackups
                             end = true
                             break@loop
                         }
@@ -221,8 +220,25 @@ class LangHime(s: String) : Lang() {
                         }
                     }
                     fallthroughStylePatternBackups = fallthroughStylePatterns
-                } else
+                } else {
                     fallthroughStylePatterns = fallthroughStylePatternBackups
+                    if (fallthroughStylePatterns.isEmpty())
+                        fallthroughStylePatterns.new(
+                            Prettify.PR_LITERAL, Regex(
+                                "^[+\\-]?(?:[0#]x[0-9a-f]+|\\d+\\/\\d+|(?:\\.\\d+|\\d+(?:\\.\\d*)?)(?:[ed][+\\-]?\\d+)?)",
+                                RegexOption.IGNORE_CASE
+                            )
+                        )
+                }
+            } else {
+                fallthroughStylePatterns = fallthroughStylePatternBackups
+                if (fallthroughStylePatterns.isEmpty())
+                    fallthroughStylePatterns.new(
+                        Prettify.PR_LITERAL, Regex(
+                            "^[+\\-]?(?:[0#]x[0-9a-f]+|\\d+\\/\\d+|(?:\\.\\d+|\\d+(?:\\.\\d*)?)(?:[ed][+\\-]?\\d+)?)",
+                            RegexOption.IGNORE_CASE
+                        )
+                    )
             }
         }
     }
