@@ -220,6 +220,13 @@ class LangHime(s: String) : Lang() {
                         }
                     }
                     fallthroughStylePatternBackups = fallthroughStylePatterns
+                    if (fallthroughStylePatternBackups.isEmpty())
+                        fallthroughStylePatternBackups.new(
+                            Prettify.PR_LITERAL, Regex(
+                                "^[+\\-]?(?:[0#]x[0-9a-f]+|\\d+\\/\\d+|(?:\\.\\d+|\\d+(?:\\.\\d*)?)(?:[ed][+\\-]?\\d+)?)",
+                                RegexOption.IGNORE_CASE
+                            )
+                        )
                 } else {
                     fallthroughStylePatterns = fallthroughStylePatternBackups
                     if (fallthroughStylePatterns.isEmpty())
