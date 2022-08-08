@@ -27,7 +27,6 @@ import com.wakaztahir.codeeditor.utils.parseCodeAsAnnotatedString
 import org.hime.call
 import gui.MTopMenuBar.MMenu
 import gui.MTopMenuBar.MMenuBar
-import gui.MTopMenuBar.MMenuItem
 import org.hime.lang.Env
 import org.hime.lang.IOConfig
 import java.io.ByteArrayOutputStream
@@ -75,9 +74,6 @@ fun mainApp() = application {
                             val errorBuilder = ByteArrayOutputStream()
                             call(Env(IOConfig(PrintStream(outBuilder), PrintStream(errorBuilder), System.`in`)), codeFieldValue.text)
                             resultFieldValue = TextFieldValue(outBuilder.toString())
-                        }
-                        MMenu("退出") {
-                            exitApplication()
                         }
                     }
                 },
