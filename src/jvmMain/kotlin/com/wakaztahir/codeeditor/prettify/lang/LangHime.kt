@@ -18,16 +18,17 @@ class LangHime(s: String) : Lang() {
     init {
         shortcutStylePatterns.new("opn", Regex("^\\(+"), null, "(")
         shortcutStylePatterns.new("clo", Regex("^\\)+"), null, ")")
-        shortcutStylePatterns.new(
+
+        fallthroughStylePatterns.new(
             Prettify.PR_COMMENT,
             Regex("^;[^\r\n]*"),
             null,
             ";"
         )
-        shortcutStylePatterns.new(
+        fallthroughStylePatterns.new(
             Prettify.PR_PLAIN, Regex("^[\t\n\r \\xA0]+"), null, "\t\n\r " + 0xA0.toChar().toString()
         )
-        shortcutStylePatterns.new(
+        fallthroughStylePatterns.new(
             Prettify.PR_STRING,
             Regex("^\\\"(?:[^\\\"\\\\]|\\\\[\\s\\S])*(?:\\\"|$)"),
             null,
