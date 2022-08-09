@@ -43,237 +43,231 @@ class LangHime(s: String) : Lang() {
         var index = 0
         var flag = 0
         var start = false
+        var end = false
         if (code.isNotEmpty()) {
-            while (code[index] != '(')
+            while (code[index] != '(') {
                 ++index
-            do {
-                if (code[index] == '\"') {
-                    var skip = false
-                    while (true) {
-                        ++index
-                        if (index < code.length - 1 && code[index] == '\\') {
-                            skip = false
-                            continue
-                        } else if (index >= code.length - 1 || code[index] == '\"') {
-                            if (skip) {
+                if (index == code.length) {
+                    end = true
+                    break
+                }
+            }
+            if (!end) {
+                do {
+                    if (code[index] == '\"') {
+                        var skip = false
+                        while (true) {
+                            ++index
+                            if (index < code.length - 1 && code[index] == '\\') {
                                 skip = false
                                 continue
-                            } else
-                                break
-                        } else if (skip) {
-                            skip = false
-                            continue
-                        }
-                    }
-                    ++index
-                    continue
-                }
-                if (code[index] == '(')
-                    ++flag
-                else if (code[index] == ')')
-                    --flag
-                ++index
-            } while (index < code.length)
-            if (flag == 0) {
-                val expressions = ArrayList<String>()
-                code = preprocessor(s)
-                index = 0
-                var end = false
-                loop@ while (index < code.length) {
-                    flag = 0
-                    val builder = StringBuilder()
-                    while (code[index] != '(') {
-                        if (index >= code.length - 1) {
-                            end = true
-                            break@loop
-                        }
-                        ++index
-                    }
-                    do {
-                        if (code[index] == '\"') {
-                            builder.append("\"")
-                            val value = StringBuilder()
-                            var skip = false
-                            while (true) {
-                                ++index
-                                if (index < code.length - 1 && code[index] == '\\') {
-                                    if (skip) {
-                                        skip = false
-                                        value.append("\\\\")
-                                    } else
-                                        skip = true
-                                    continue
-                                } else if (index >= code.length - 1 || code[index] == '\"') {
-                                    if (skip) {
-                                        skip = false
-                                        value.append("\\\"")
-                                        continue
-                                    } else
-                                        break
-                                } else if (skip) {
-                                    value.append("\\${code[index]}")
+                            } else if (index >= code.length - 1 || code[index] == '\"') {
+                                if (skip) {
                                     skip = false
                                     continue
-                                }
-                                value.append(code[index])
-                            }
-                            builder.append(value.append("\"").toString())
-                            ++index
-                            continue
-                        }
-                        if (code[index] == '(')
-                            ++flag
-                        else if (code[index] == ')')
-                            --flag
-                        builder.append(code[index++])
-                    } while (flag > 0)
-                    expressions.add(builder.toString())
-                }
-                if (!end) {
-                    for (expression in expressions) {
-                        index = -1
-                        while (++index < expression.length) {
-                            when (expression[index]) {
-                                '(' -> {
-                                    start = true
-                                    continue
-                                }
-
-                                ')' -> continue
-                                ' ' -> continue
-                            }
-                            if (expression[index] == '-' && index < expression.length - 1 && Character.isDigit(
-                                    expression[index + 1]
-                                )
-                            )
-                                ++index
-                            if (expression[index].isDigit()) {
-                                while (true) {
-                                    if (index >= expression.length - 1 || !expression[index].isDigit()) {
-                                        --index
-                                        break
-                                    }
-                                    ++index
-                                }
-                                if (expression[index + 1] != '.')
-                                    continue
-                                ++index
-                                while (true) {
-                                    ++index
-                                    if (index >= expression.length - 1 || !expression[index].isDigit()) {
-                                        --index
-                                        break
-                                    }
-                                }
+                                } else
+                                    break
+                            } else if (skip) {
+                                skip = false
                                 continue
                             }
-                            if (expression[index] == '\"') {
+                        }
+                        ++index
+                        continue
+                    }
+                    if (code[index] == '(')
+                        ++flag
+                    else if (code[index] == ')')
+                        --flag
+                    ++index
+                } while (index < code.length)
+                if (flag == 0) {
+                    val expressions = ArrayList<String>()
+                    code = preprocessor(s)
+                    index = 0
+                    loop@ while (index < code.length) {
+                        flag = 0
+                        val builder = StringBuilder()
+                        while (code[index] != '(') {
+                            if (index >= code.length - 1) {
+                                end = true
+                                break@loop
+                            }
+                            ++index
+                        }
+                        do {
+                            if (code[index] == '\"') {
+                                builder.append("\"")
+                                val value = StringBuilder()
                                 var skip = false
                                 while (true) {
                                     ++index
-                                    if (index < expression.length - 1 && expression[index] == '\\') {
-                                        skip = !skip
-                                        continue
-                                    } else if (index >= expression.length - 1 || expression[index] == '\"') {
+                                    if (index < code.length - 1 && code[index] == '\\') {
                                         if (skip) {
                                             skip = false
+                                            value.append("\\\\")
+                                        } else
+                                            skip = true
+                                        continue
+                                    } else if (index >= code.length - 1 || code[index] == '\"') {
+                                        if (skip) {
+                                            skip = false
+                                            value.append("\\\"")
                                             continue
                                         } else
                                             break
-                                    }
-                                    if (skip)
+                                    } else if (skip) {
+                                        value.append("\\${code[index]}")
                                         skip = false
+                                        continue
+                                    }
+                                    value.append(code[index])
+                                }
+                                builder.append(value.append("\"").toString())
+                                ++index
+                                continue
+                            }
+                            if (code[index] == '(')
+                                ++flag
+                            else if (code[index] == ')')
+                                --flag
+                            builder.append(code[index++])
+                        } while (flag > 0)
+                        expressions.add(builder.toString())
+                    }
+                    if (!end) {
+                        for (expression in expressions) {
+                            index = -1
+                            while (++index < expression.length) {
+                                when (expression[index]) {
+                                    '(' -> {
+                                        start = true
+                                        continue
+                                    }
+
+                                    ')' -> continue
+                                    ' ' -> continue
+                                }
+                                if (expression[index] == '-' && index < expression.length - 1 && Character.isDigit(
+                                        expression[index + 1]
+                                    )
+                                )
+                                    ++index
+                                if (expression[index].isDigit()) {
+                                    while (true) {
+                                        if (index >= expression.length - 1 || !expression[index].isDigit()) {
+                                            --index
+                                            break
+                                        }
+                                        ++index
+                                    }
+                                    if (expression[index + 1] != '.')
+                                        continue
+                                    ++index
+                                    while (true) {
+                                        ++index
+                                        if (index >= expression.length - 1 || !expression[index].isDigit()) {
+                                            --index
+                                            break
+                                        }
+                                    }
+                                    continue
+                                }
+                                if (expression[index] == '\"') {
+                                    var skip = false
+                                    while (true) {
+                                        ++index
+                                        if (index < expression.length - 1 && expression[index] == '\\') {
+                                            skip = !skip
+                                            continue
+                                        } else if (index >= expression.length - 1 || expression[index] == '\"') {
+                                            if (skip) {
+                                                skip = false
+                                                continue
+                                            } else
+                                                break
+                                        }
+                                        if (skip)
+                                            skip = false
+                                    }
+                                    continue
+                                }
+                                if (expression[index] != ' ' && expression[index] != '(' && expression[index] != ')') {
+                                    val builder = StringBuilder()
+                                    while (true) {
+                                        if (index >= expression.length - 1 || expression[index] == ' ' || expression[index] == ')') {
+                                            --index
+                                            break
+                                        }
+                                        builder.append(expression[index])
+                                        ++index
+                                    }
+                                    if (start) {
+                                        when (val regex = builder.toString()) {
+                                            "+" -> {
+                                                fallthroughStylePatterns.new(
+                                                    Prettify.PR_KEYWORD,
+                                                    Regex(
+                                                        "^\\+",
+                                                        RegexOption.IGNORE_CASE
+                                                    ),
+                                                    null
+                                                )
+                                            }
+
+                                            "*" -> {
+                                                fallthroughStylePatterns.new(
+                                                    Prettify.PR_KEYWORD,
+                                                    Regex(
+                                                        "^\\*",
+                                                        RegexOption.IGNORE_CASE
+                                                    ),
+                                                    null
+                                                )
+                                            }
+
+                                            else -> fallthroughStylePatterns.new(
+                                                Prettify.PR_KEYWORD,
+                                                Regex(
+                                                    "^$regex",
+                                                    RegexOption.IGNORE_CASE
+                                                ),
+                                                null
+                                            )
+                                        }
+                                        start = false
+                                    }
                                 }
                                 continue
                             }
-                            if (expression[index] != ' ' && expression[index] != '(' && expression[index] != ')') {
-                                val builder = StringBuilder()
-                                while (true) {
-                                    if (index >= expression.length - 1 || expression[index] == ' ' || expression[index] == ')') {
-                                        --index
-                                        break
-                                    }
-                                    builder.append(expression[index])
-                                    ++index
-                                }
-                                fun transformation(ss: String): String {
-                                    return when (ss) {
-                                        "+" -> "\\+"
-                                        "*" -> "\\*"
-                                        "-" -> "\\-"
-                                        else -> ss
-                                    }
-                                }
-                                if (start) {
-                                    when (val regex = builder.toString()) {
-                                        "+" -> {
-                                            fallthroughStylePatterns.new(
-                                                Prettify.PR_KEYWORD,
-                                                Regex(
-                                                    "^\\+",
-                                                    RegexOption.IGNORE_CASE
-                                                ),
-                                                null
-                                            )
-                                        }
-
-                                        "*" -> {
-                                            fallthroughStylePatterns.new(
-                                                Prettify.PR_KEYWORD,
-                                                Regex(
-                                                    "^\\*",
-                                                    RegexOption.IGNORE_CASE
-                                                ),
-                                                null
-                                            )
-                                        }
-
-                                        else -> fallthroughStylePatterns.new(
-                                            Prettify.PR_KEYWORD,
-                                            Regex(
-                                                "^$regex",
-                                                RegexOption.IGNORE_CASE
-                                            ),
-                                            null
-                                        )
-                                    }
-                                    start = false
-                                }
-                            }
-                            continue
                         }
-                    }
-                    fallthroughStylePatternBackups = fallthroughStylePatterns
-                    if (fallthroughStylePatternBackups.isEmpty())
-                        fallthroughStylePatternBackups.new(
-                            Prettify.PR_LITERAL, Regex(
-                                "^[+\\-]?(?:[0#]x[0-9a-f]+|\\d+\\/\\d+|(?:\\.\\d+|\\d+(?:\\.\\d*)?)(?:[ed][+\\-]?\\d+)?)",
-                                RegexOption.IGNORE_CASE
+                        fallthroughStylePatternBackups = fallthroughStylePatterns
+                        if (fallthroughStylePatternBackups.isEmpty())
+                            fallthroughStylePatternBackups.new(
+                                Prettify.PR_LITERAL, Regex(
+                                    "^[+\\-]?(?:[0#]x[0-9a-f]+|\\d+\\/\\d+|(?:\\.\\d+|\\d+(?:\\.\\d*)?)(?:[ed][+\\-]?\\d+)?)",
+                                    RegexOption.IGNORE_CASE
+                                )
                             )
-                        )
-                } else {
-                    fallthroughStylePatterns = fallthroughStylePatternBackups
-                    if (fallthroughStylePatterns.isEmpty())
-                        fallthroughStylePatterns.new(
-                            Prettify.PR_LITERAL, Regex(
-                                "^[+\\-]?(?:[0#]x[0-9a-f]+|\\d+\\/\\d+|(?:\\.\\d+|\\d+(?:\\.\\d*)?)(?:[ed][+\\-]?\\d+)?)",
-                                RegexOption.IGNORE_CASE
-                            )
-                        )
-                }
-            } else {
-                fallthroughStylePatterns = fallthroughStylePatternBackups
-                if (fallthroughStylePatterns.isEmpty())
-                    fallthroughStylePatterns.new(
-                        Prettify.PR_LITERAL, Regex(
-                            "^[+\\-]?(?:[0#]x[0-9a-f]+|\\d+\\/\\d+|(?:\\.\\d+|\\d+(?:\\.\\d*)?)(?:[ed][+\\-]?\\d+)?)",
-                            RegexOption.IGNORE_CASE
-                        )
-                    )
-            }
+                    } else
+                        end()
+                } else
+                    end()
+            } else
+                end()
         }
     }
 
+    private fun end() {
+        fallthroughStylePatterns = fallthroughStylePatternBackups
+        if (fallthroughStylePatterns.isEmpty())
+            fallthroughStylePatterns.new(
+                Prettify.PR_LITERAL, Regex(
+                    "^[+\\-]?(?:[0#]x[0-9a-f]+|\\d+\\/\\d+|(?:\\.\\d+|\\d+(?:\\.\\d*)?)(?:[ed][+\\-]?\\d+)?)",
+                    RegexOption.IGNORE_CASE
+                )
+            )
+    }
     override fun getFileExtensions(): List<String> {
         return fileExtensions
     }
