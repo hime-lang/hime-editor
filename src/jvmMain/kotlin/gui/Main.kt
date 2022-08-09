@@ -24,18 +24,31 @@ import com.wakaztahir.codeeditor.prettify.PrettifyParser
 import com.wakaztahir.codeeditor.prettify.lang.LangHime
 import com.wakaztahir.codeeditor.theme.CodeThemeType
 import com.wakaztahir.codeeditor.utils.parseCodeAsAnnotatedString
-import org.hime.call
 import gui.MTopMenuBar.MMenu
 import gui.MTopMenuBar.MMenuBar
+import org.hime.call
 import org.hime.lang.Env
 import org.hime.lang.IOConfig
-import java.io.ByteArrayOutputStream
+import java.io.OutputStream
 import java.io.PrintStream
 import javax.swing.UIManager
 
 val ThirdColor = Color(0xFFBB86FC)
 val SecondaryColor = Color(0xFF03DAC5)
 val MainColor = Color(0xFF1e88a8)
+
+var run = false
+class HimeEditorOutPutStream(private val func: (String) -> Unit): OutputStream() {
+    private val builder = StringBuilder()
+    override fun write(buffer: ByteArray, offset: Int, length: Int) {
+        builder.append(String(buffer, offset, length))
+        func(builder.toString())
+    }
+
+    override fun write(b: Int) {
+        write(byteArrayOf(b.toByte()), 0, 1)
+    }
+}
 
 fun mainApp() = application {
     val windowState = rememberWindowState(size = DpSize(1024.dp, 1300.dp))
@@ -70,10 +83,20 @@ fun mainApp() = application {
                 topBar = {
                     MMenuBar("姬语言编辑器", windowState) {
                         MMenu("运行") {
-                            val outBuilder = ByteArrayOutputStream()
-                            call(Env(IOConfig(PrintStream(outBuilder), PrintStream(outBuilder), System.`in`)), codeFieldValue.text)
-                            resultFieldValue = TextFieldValue(outBuilder.toString())
-                            outBuilder.close()
+                            if (!run) {
+                                Thread {
+                                    run = true
+                                    val outBuilder = HimeEditorOutPutStream(fun(value: String) {
+                                        resultFieldValue = TextFieldValue(value)
+                                    })
+                                    call(
+                                        Env(IOConfig(PrintStream(outBuilder), PrintStream(outBuilder), System.`in`)),
+                                        codeFieldValue.text
+                                    )
+                                    outBuilder.close()
+                                    run = false
+                                }.start()
+                            }
                         }
                     }
                 },
