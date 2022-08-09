@@ -18,7 +18,6 @@ class LangHime(s: String) : Lang() {
     init {
         shortcutStylePatterns.new("opn", Regex("^\\(+"), null, "(")
         shortcutStylePatterns.new("clo", Regex("^\\)+"), null, ")")
-
         fallthroughStylePatterns.new(
             Prettify.PR_COMMENT,
             Regex("^;[^\r\n]*"),
